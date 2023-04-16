@@ -105,6 +105,7 @@ def csv_to_embeddings(csv_path: str) -> pd.DataFrame:
     df["embedding"] = df["embedding"].apply(ast.literal_eval)
     return df
 
+# embed_code()
 df = csv_to_embeddings("embeddings.csv")
 
 question = "What are the priors in the threshold model?"
