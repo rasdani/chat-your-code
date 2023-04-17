@@ -8,6 +8,7 @@ from scipy import spatial
 EMBEDDING_MODEL = "text-embedding-ada-002"
 GPT_MODEL = "gpt-3.5-turbo"
 
+# change this to the path of your code directory
 CODE_DIR_PATH = "/home/rasdani/git/mp-eyetracking/src"
 
 
@@ -85,11 +86,12 @@ def ask(
 
 def embed_code():
     """Embeds all code in the code directory and saves it to a csv."""
-    file_paths = [f"{CODE_DIR_PATH}/{file_name}" for file_name in os.listdir(CODE_DIR_PATH) if file_name.endswith(".py")]
+    file_paths = [os.path.join(CODE_DIR_PATH, file_name) for file_name in os.listdir(CODE_DIR_PATH) if file_name.endswith(".py")]
     df = pd.DataFrame(columns=["text", "embedding", "file_path"])
     for file_path in file_paths:
         with open(file_path, "r") as f:
             lines = f.readlines()
+            # add line numbers to source code
             file_text = ''.join([f"{i+1} {line}" for i, line in enumerate(lines)])
         input = f"FILEPATH: {file_path}\n\nSOURCE CODE:\n\n{file_text}"
         print("Embedding ", file_path)
@@ -119,6 +121,6 @@ def interactive_chat(df: pd.DataFrame):
 
 
 if __name__ == "__main__":
-    # embed_code()
+    # embed_code() # comment out if you have already embedded your code
     df = csv_to_embeddings("embeddings.csv")
     interactive_chat(df)
