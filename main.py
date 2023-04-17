@@ -24,12 +24,12 @@ def strings_ranked_by_relatedness(
     )
     query_embedding = query_embedding_response["data"][0]["embedding"]
     strings_and_relatednesses = [
-        (row["text"], relatedness_fn(query_embedding, row["embedding"]))
+        (row["text"], relatedness_fn(query_embedding, row["embedding"]), row["file_path"])
         for i, row in df.iterrows()
     ]
     strings_and_relatednesses.sort(key=lambda x: x[1], reverse=True)
-    strings, relatednesses = zip(*strings_and_relatednesses)
-    return strings[:top_n], relatednesses[:top_n]
+    strings, relatednesses, file_paths = zip(*strings_and_relatednesses)
+    return strings[:top_n], relatednesses[:top_n], file_paths[:top_n]
 
 def num_tokens(text: str, model: str = GPT_MODEL) -> int:
     """Return the number of tokens in a string."""
@@ -44,12 +44,12 @@ def query_message(
     token_budget: int
 ) -> str:
     """Return a message for GPT, with relevant source texts pulled from a dataframe."""
-    strings, relatednesses = strings_ranked_by_relatedness(query, df)
+    strings, relatednesses, file_paths = strings_ranked_by_relatedness(query, df)
     introduction = 'Use the below snippets of code. If the snippets do not provide enough context, write "I need more context."'
     question = f"\n\nQuestion: {query}"
     message = introduction
-    for string in strings:
-        next_snippet = f'\n\nSnippet of code:\n"""\n{string}\n"""'
+    for string, file_path in zip(strings, file_paths):
+        next_snippet = f'\n\nSnippet of {file_path}:\n"""\n{string}\n"""'
         if (
             num_tokens(message + next_snippet + question, model=model)
             > token_budget
@@ -85,18 +85,20 @@ def ask(
 
 def embed_code():
     """Embeds all code in the code directory and saves it to a csv."""
-    file_paths = [f"{CODE_DIR_PATH}/{file_path}" for file_path in os.listdir(CODE_DIR_PATH) if file_path.endswith(".py")]
-    df = pd.DataFrame(columns=["text", "embedding"])
+    file_paths = [f"{CODE_DIR_PATH}/{file_name}" for file_name in os.listdir(CODE_DIR_PATH) if file_name.endswith(".py")]
+    df = pd.DataFrame(columns=["text", "embedding", "file_path"])
     for file_path in file_paths:
         with open(file_path, "r") as f:
-            file_text = f.read()
+            lines = f.readlines()
+            file_text = ''.join([f"{i+1} {line}" for i, line in enumerate(lines)])
+        input = f"FILEPATH: {file_path}\n\nSOURCE CODE:\n\n{file_text}"
         print("Embedding ", file_path)
         file_embedding_response = openai.Embedding.create(
             model=EMBEDDING_MODEL,
-            input=file_text,
+            input=input,
         )
         file_embedding = file_embedding_response["data"][0]["embedding"]
-        df = df.append({"text": file_text, "embedding": file_embedding}, ignore_index=True)
+        df = df.append({"text": file_text, "embedding": file_embedding, "file_path": file_path}, ignore_index=True)
     df.to_csv("embeddings.csv")
     
 def csv_to_embeddings(csv_path: str) -> pd.DataFrame:

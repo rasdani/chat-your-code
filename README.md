@@ -11,4 +11,4 @@ TODO:
 - [ ] play around with prompt
 - [x] chat interactively on command line
 - [ ] look into how chat history is persisted
-- [ ] include metadata of source files (e.g. filname)
+- [x] include metadata of source files (e.g. filenames, line numbers)
