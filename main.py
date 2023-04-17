@@ -85,7 +85,7 @@ def ask(
 
 def embed_code():
     """Embeds all code in the code directory and saves it to a csv."""
-    file_paths = [ f"{CODE_DIR_PATH}/{file_path}" for file_path in os.listdir(CODE_DIR_PATH) if file_path.endswith(".py")]
+    file_paths = [f"{CODE_DIR_PATH}/{file_path}" for file_path in os.listdir(CODE_DIR_PATH) if file_path.endswith(".py")]
     df = pd.DataFrame(columns=["text", "embedding"])
     for file_path in file_paths:
         with open(file_path, "r") as f:
@@ -105,9 +105,18 @@ def csv_to_embeddings(csv_path: str) -> pd.DataFrame:
     df["embedding"] = df["embedding"].apply(ast.literal_eval)
     return df
 
-# embed_code()
-df = csv_to_embeddings("embeddings.csv")
+def interactive_chat(df: pd.DataFrame):
+    print("Interactive chat started. Type 'exit' to end the session.")
+    while True:
+        user_input = input("User: ")
+        if user_input.strip().lower() == "exit":
+            break
 
-question = "What are the priors in the threshold model?"
-answer = ask(question, df)
-print(answer)
+        answer = ask(user_input, df)
+        print("Assistant:", answer)
+
+
+if __name__ == "__main__":
+    # embed_code()
+    df = csv_to_embeddings("embeddings.csv")
+    interactive_chat(df)

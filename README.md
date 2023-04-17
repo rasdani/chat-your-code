@@ -9,4 +9,6 @@ Finds cosine similiar source files and stuffs them into ChatGPT's prompt.
 TODO:
 - [ ] make better use of context window
 - [ ] play around with prompt
-- [ ] chat interactively on command line
+- [x] chat interactively on command line
+- [ ] look into how chat history is persisted
+- [ ] include metadata of source files (e.g. filname)
