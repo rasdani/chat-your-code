@@ -7,5 +7,5 @@ Finds cosine similiar source files and stuffs them into ChatGPT's prompt.
 
 
 TODO:
-[] make better use of context window
-[] play around with prompt
+- [ ] make better use of context window
+- [ ] play around with prompt
