@@ -7,6 +7,8 @@ Finds cosine similiar source files and stuffs them into ChatGPT's prompt.
 
 Export your API key as `OPENAI_API_KEY` and run `python main.py`.
 
+For more acurate answers change model to GPT4.
+
 
 TODO:
 - [ ] make better use of context window
