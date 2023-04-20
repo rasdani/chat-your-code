@@ -5,8 +5,12 @@ import pandas as pd
 import tiktoken
 from scipy import spatial
 
+FREE_OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+GPT4_OPENAI_API_KEY = os.environ["GPT4_OPENAI_API_KEY"]
+
 EMBEDDING_MODEL = "text-embedding-ada-002"
-GPT_MODEL = "gpt-3.5-turbo"
+# GPT_MODEL = "gpt-3.5-turbo"
+GPT_MODEL = "gpt-4"
 
 # change this to the path of your code directory
 CODE_DIR_PATH = "/home/rasdani/git/mp-eyetracking/src"
@@ -19,6 +23,7 @@ def strings_ranked_by_relatedness(
     top_n: int = 100
 ) -> tuple[list[str], list[float]]:
     """Returns a list of strings and relatednesses, sorted from most related to least."""
+    openai.api_key = FREE_OPENAI_API_KEY
     query_embedding_response = openai.Embedding.create(
         model=EMBEDDING_MODEL,
         input=query,
@@ -76,10 +81,11 @@ def ask(
         {"role": "system", "content": "You answer questions about the snippets of code and assist in code generation."},
         {"role": "user", "content": message},
     ]
+    openai.api_key = GPT4_OPENAI_API_KEY
     response = openai.ChatCompletion.create(
         model=model,
         messages=messages,
-        temperature=0
+        temperature=0,
     )
     response_message = response["choices"][0]["message"]["content"]
     return response_message
