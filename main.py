@@ -5,7 +5,7 @@ import pandas as pd
 import tiktoken
 from scipy import spatial
 
-FREE_OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+FREE_OPENAI_API_KEY = os.environ["OPENAI_API_KEY"] # free credits
 GPT4_OPENAI_API_KEY = os.environ["GPT4_OPENAI_API_KEY"]
 
 EMBEDDING_MODEL = "text-embedding-ada-002"
